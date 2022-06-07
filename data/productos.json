@@ -1,0 +1,11 @@
+[
+    {
+        "productName": "Pepsi 2",
+        "productDescription": "Gaseosa Lata",
+        "productCode": "123456",
+        "productImageUrl": "../images/pepsi-lata1-ecfaa17e4df53a90d916244554987465-480-0.jpg",
+        "price": 150,
+        "productStock": "15",
+        "id": "4c3dc58c-365d-4d25-900d-a9d981a3dfe8"
+    }
+]
