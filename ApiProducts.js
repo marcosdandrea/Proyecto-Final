@@ -19,17 +19,13 @@ module.exports = class Api {
      * @param {object} config 
      * @param {Contenedor} contenedor
      */
-    constructor(app, adminMode, config, contenedor) {
+    constructor(app, config, contenedor) {
 
         this.app = app
         this.contenedor = contenedor;
         this.apiRouter = express.Router()
 
-        this.apiRouter.get("/", (req, res) => {
-            if (!adminMode) {
-                res.status(403).send(JSON.stringify({ error: 'no autorizado' }))
-                return;
-            }
+        this.apiRouter.get("/", config.middlewareAuthentication, config.middlewareAuthorization, (req, res) => {
 
             contenedor.getAll()
                 .then((products) => {
@@ -44,11 +40,7 @@ module.exports = class Api {
                 })
         })
 
-        this.apiRouter.get("/:id", (req, res) => {
-            if (!adminMode) {
-                res.status(403).send(JSON.stringify({ error: 'no autorizado' }))
-                return;
-            }
+        this.apiRouter.get("/:id", config.middlewareAuthentication, config.middlewareAuthorization,  (req, res) => {
 
             this.contenedor.getById(req.params.id)
                 .then((products) => {
@@ -64,11 +56,7 @@ module.exports = class Api {
         })
 
 
-        this.apiRouter.post("/", uploader.single("image"), (req, res) => {
-            if (!adminMode) {
-                res.status(403).send(JSON.stringify({ error: 'no autorizado' }))
-                return;
-            }
+        this.apiRouter.post("/", config.middlewareAuthentication, config.middlewareAuthorization, uploader.single("image"), (req, res) => {
 
             const { file } = req;
             const productName = req.body.productName
@@ -100,11 +88,7 @@ module.exports = class Api {
 
         })
 
-        this.apiRouter.put("/:id", uploader.single("image"), (req, res) => {
-            if (!adminMode) {
-                res.status(403).send(JSON.stringify({ error: 'no autorizado' }))
-                return;
-            }
+        this.apiRouter.put("/:id", config.middlewareAuthentication, config.middlewareAuthorization,  uploader.single("image"), (req, res) => {
 
             const { file } = req;
             const productName = req.body.productName
@@ -137,11 +121,7 @@ module.exports = class Api {
 
         })
 
-        this.apiRouter.delete("/:id", (req, res) => {
-            if (!adminMode) {
-                res.status(403).send(JSON.stringify({ error: 'no autorizado' }))
-                return;
-            }
+        this.apiRouter.delete("/:id", config.middlewareAuthentication, config.middlewareAuthorization, (req, res) => {
 
             contenedor.deleteByID(req.params.id)
                 .then(() => {
@@ -153,15 +133,8 @@ module.exports = class Api {
                 })
         })
 
-
         app.use(config.apiRoute, this.apiRouter)
 
-        app.use((req, res, next) => {
-            res.status(404).send({
-                status: 404,
-                error: 'Not found'
-            })
-        })
         app.use("/", express.static(path.join(__dirname, 'public')))
     }
 
